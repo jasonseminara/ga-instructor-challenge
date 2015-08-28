@@ -2,4 +2,15 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}. 
+  p Enter a search term and press ENTER to search. 
+  input#search(type="search", placeholder="Search IMDB Movie Titles")
+
+  div#results
+    hr
+    table
+      thead
+        tr
+          th Title
+          th Year
+          th 
+      tbody    
