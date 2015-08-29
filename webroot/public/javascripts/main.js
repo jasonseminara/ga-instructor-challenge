@@ -1,7 +1,9 @@
 $(function(){
 
   // global ref to the results div
-  var $results = $('#results');
+  var $results      = $('#results');
+  var $fullDetails  = $('#moreinfo');
+  var omdbURL       = 'http://www.omdbapi.com/';
 
   // hide the results by default
   $results.hide();
@@ -23,12 +25,19 @@ $(function(){
     })
 
     // iterate through the results and create a table row from each movie
-    $.each(results, function(i, item) {
+    $.each( results, function(i, item) {
       $('<tr>').append(
-        $('<td>').text(item.Title),
+        $('<td>').append(
+          $('<a>', {
+            title: "Click to see more details about this movie.",
+            href:'#',
+            class:'moreinfo',
+            'data-imdbID': item.imdbID 
+          }).text(item.Title)
+        ),
         $('<td>').text(item.Year),
         $('<td>').append(
-          $("<a>", {
+          $('<a>', {
             title: "Favorite this title",
             href: "/favorite/" + item.imdbID 
           }).text("Add to favorites")
@@ -37,13 +46,37 @@ $(function(){
     });
   }
 
+  // build the details section
+  var showDetails = function(data,$target){
+    
+    // make a new table
+    $table = $('<table>')
+    
+    $target
+      .empty()
+      .append($table)
+
+    $.each( data, function(key, val) {
+      $('<tr>').append(
+        $('<th>').text(key),
+        $('<td>').text(val)
+      ).appendTo($table)
+      //console.log(key,val);
+    })
+  }
+
+  // Hide results DRY because we 
+  var hideResults = function(e){
+    $results.hide()
+    $fullDetails.hide()
+  }
 
   // when typing in the search box
   $('#search')
+
     // hide the results when the user clears or clicks the search field
-    .on('click',function(e){
-      $results.hide()
-    })
+    .on('click',hideResults)
+  
     // react to each keystroke
     .on('keyup',function(e){
       //console.log(e)
@@ -52,18 +85,43 @@ $(function(){
         
         // enter
         case 13:
-          $.get('http://www.omdbapi.com/',{s:searchTerm,type:'movie'},function(data){
+          $.get(omdbURL,{s:searchTerm,type:'movie'},function(data){
             showResults(data,$results.find('tbody'));
           })
           break;
         
         // bkspc  
         case 8:
-          $results.hide()
+          hideResults()
           break;
       }
       
     })
 
+  // click to see more about a title  
+  $results.on('click','a.moreinfo',function(e){
+    
+    $fullDetails.empty()
+    $fullDetails.show()
+
+
+    $infoLink = $(e.target)
+    
+    // Go back to omdb to get extended info for this title.
+    $.get( omdbURL,
+      { 
+        /* the link has a data attribute of data-imdbid */
+        i:$infoLink.data('imdbid'),
+        type:'movie',
+        plot:'full'
+      },
+      function(data){
+        showDetails(data,$fullDetails);
+      }
+    )
+    // we don't want the event to propagate beyond this handler. Make it stop here. 
+    e.preventDefault()
+    e.stopPropagation();
+  })
 
 })
