@@ -3,7 +3,7 @@ $(function(){
   // global ref to the results div
   var $results      = $('#results');
   var $fullDetails  = $('#moreinfo');
-  var omdbURL       = 'http://www.omdbapi.com/';
+  var omdbURL       = '//www.omdbapi.com/';
 
   // hide the results by default
   $results.hide();
