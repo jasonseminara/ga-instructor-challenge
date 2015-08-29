@@ -127,6 +127,8 @@ $(function(){
       e.preventDefault()
       e.stopPropagation();
     })
+
+    /* click to make a favorite */
     .on('click','a.makefavorite',function(e){
       $infoLink = $(e.target)
       console.log($infoLink.data());
