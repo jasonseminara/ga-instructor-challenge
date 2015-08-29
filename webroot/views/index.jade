@@ -1,18 +1,23 @@
 extends layout
 
 block content
+  p 
+    a(href='/favorites') View your favorites >
   h1= title
+  input#search(type="search", placeholder="Search IMDB Movie Titles") 
   p Enter a search term and press ENTER to search. 
-  input#search(type="search", placeholder="Search IMDB Movie Titles")
 
-  div#results
-    hr
-    table
-      thead
-        tr
-          th Title
-          th Year
-          th 
-      tbody   
-  hr     
-  div#moreinfo
+  div#container
+    div#results
+      hr
+      table
+        thead
+          tr
+            th Title
+            th Year
+            th 
+        tbody   
+    hr     
+    aside#moreinfo
+  footer
+    p Author: Jason Seminara

@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  p 
+    a(href='/') < Back to Search
+  h1= title
+  hr
+  div#favorites
+    
+    ol
+      each m in movies.length ? movies : ["You don't have any favorite movies"]
+        li= m.name

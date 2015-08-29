@@ -18,7 +18,7 @@ $(function(){
     $results.show()
 
     // fn to sort the movie results by year, and then title
-    var results = data.Search.sort(function (a,b) {
+    var results = data.Search.sort( function (a,b) {
       return (a.Year===b.Year) 
         ? a.title > b.title 
         : a.Year > b.Year;
@@ -32,14 +32,17 @@ $(function(){
             title: "Click to see more details about this movie.",
             href:'#',
             class:'moreinfo',
-            'data-imdbID': item.imdbID 
+            'data-oid': item.imdbID 
           }).text(item.Title)
         ),
         $('<td>').text(item.Year),
         $('<td>').append(
           $('<a>', {
-            title: "Favorite this title",
-            href: "/favorite/" + item.imdbID 
+            title: 'Favorite this title',
+            class:'makefavorite',
+            'data-oid': item.imdbID,
+            'data-name': item.Title,
+            href: '#'
           }).text("Add to favorites")
         )
       ).appendTo($target);
@@ -99,29 +102,35 @@ $(function(){
     })
 
   // click to see more about a title  
-  $results.on('click','a.moreinfo',function(e){
-    
-    $fullDetails.empty()
-    $fullDetails.show()
+  $results
+    .on('click','a.moreinfo',function(e){
+      
+      $fullDetails.empty()
+      $fullDetails.show()
 
 
-    $infoLink = $(e.target)
-    
-    // Go back to omdb to get extended info for this title.
-    $.get( omdbURL,
-      { 
-        /* the link has a data attribute of data-imdbid */
-        i:$infoLink.data('imdbid'),
-        type:'movie',
-        plot:'full'
-      },
-      function(data){
-        showDetails(data,$fullDetails);
-      }
-    )
-    // we don't want the event to propagate beyond this handler. Make it stop here. 
-    e.preventDefault()
-    e.stopPropagation();
-  })
+      $infoLink = $(e.target)
+      
+      // Go back to omdb to get extended info for this title.
+      $.get( omdbURL,
+        { 
+          /* the link has a data attribute of data-imdbid */
+          i:$infoLink.data('oid'),
+          type:'movie',
+          plot:'full'
+        },
+        function(data){
+          showDetails(data,$fullDetails);
+        }
+      )
+      // we don't want the event to propagate beyond this handler. Make it stop here. 
+      e.preventDefault()
+      e.stopPropagation();
+    })
+    .on('click','a.makefavorite',function(e){
+      $infoLink = $(e.target)
+      console.log($infoLink.data());
+      $.post('/favorites',$infoLink.data(),function(data){console.log(data)})
+    })
 
 })
